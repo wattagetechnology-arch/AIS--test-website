@@ -710,6 +710,128 @@
     }
     .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 
+    /* ─── MODAL ─────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal {
+      background: #0a1e2e;
+      border: 1px solid rgba(0,169,224,0.25);
+      border-radius: 16px;
+      padding: 48px;
+      width: 100%;
+      max-width: 560px;
+      position: relative;
+      transform: translateY(24px);
+      transition: transform 0.3s ease;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 60px rgba(0,169,224,0.06);
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-close {
+      position: absolute;
+      top: 20px; right: 20px;
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--silver);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .modal-close:hover { background: rgba(0,169,224,0.15); color: var(--white); border-color: var(--cyan); }
+    .modal-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 12px;
+    }
+    .modal-tag::before { content: ''; width: 20px; height: 2px; background: var(--cyan); }
+    .modal h2 {
+      font-family: var(--font-main);
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .modal-sub { font-size: 14px; color: var(--silver); margin-bottom: 32px; line-height: 1.6; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .form-group label { font-size: 12px; font-weight: 600; color: var(--silver); letter-spacing: 0.04em; text-transform: uppercase; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      width: 100%;
+    }
+    .form-group select option { background: #0a1e2e; }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: rgba(203,204,204,0.4); }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0,169,224,0.12);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .modal-submit {
+      width: 100%;
+      margin-top: 8px;
+      padding: 15px;
+      font-size: 15px;
+    }
+    .modal-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 20px 0;
+      gap: 16px;
+    }
+    .success-icon {
+      width: 64px; height: 64px;
+      background: rgba(0,169,224,0.12);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--cyan);
+    }
+    .modal-success h3 { font-family: var(--font-main); font-size: 22px; font-weight: 700; }
+    .modal-success p { font-size: 14px; color: var(--silver); line-height: 1.7; max-width: 360px; }
+    @media (max-width: 600px) {
+      .modal { padding: 32px 24px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
     /* ─── FOOTER ────────────────────────────────────────── */
     footer {
       position: relative;
@@ -1184,10 +1306,10 @@
       <h2>Ready to Power Your<br /><span class="gradient-text">Business with AI?</span></h2>
       <p>Let's talk about where AI can make the biggest difference for your business. Book a free 30-minute strategy call — no pitch, just value.</p>
       <div class="cta-actions">
-        <a href="mailto:hello@lightningtech.com" class="btn-primary">
+        <button class="btn-primary modal-trigger" onclick="openModal()">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
           Book a Strategy Call
-        </a>
+        </button>
         <a href="#services" class="btn-outline">See Our Services</a>
       </div>
     </div>
@@ -1258,6 +1380,27 @@
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // ── MODAL ──
+  function openModal() {
+    document.getElementById('contactModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('contactModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('contactModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+  });
+  document.getElementById('strategyForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    document.getElementById('formContent').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'flex';
   });
 
   // ── SCROLL REVEAL ──
@@ -1516,5 +1659,71 @@
     drawGlobe();
   })();
 </script>
+
+<!-- ── CONTACT MODAL ── -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <div id="formContent">
+      <div class="modal-tag">Free Consultation</div>
+      <h2>Book a Strategy Call</h2>
+      <p class="modal-sub">Fill out the form below and we'll reach out within 24 hours to schedule your free 30-minute strategy session.</p>
+      <form id="strategyForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" placeholder="John" required />
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" placeholder="Smith" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="john@company.com" required />
+        </div>
+        <div class="form-group">
+          <label>Company / Business Name</label>
+          <input type="text" placeholder="Acme Inc." />
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" placeholder="+1 (555) 000-0000" />
+        </div>
+        <div class="form-group">
+          <label>Service You're Interested In</label>
+          <select required>
+            <option value="" disabled selected>Select a service...</option>
+            <option>AI Strategy & Consulting</option>
+            <option>Intelligent Automation</option>
+            <option>Brand & UI/UX Design</option>
+            <option>Data Analytics & Insights</option>
+            <option>Custom AI Solutions</option>
+            <option>Website & App Development</option>
+            <option>AI Training & Enablement</option>
+            <option>Not sure — need guidance</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tell Us About Your Project</label>
+          <textarea placeholder="Brief description of your goals, challenges, or what you're looking to achieve..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary modal-submit">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Submit Request
+        </button>
+      </form>
+    </div>
+    <div class="modal-success" id="formSuccess">
+      <div class="success-icon">
+        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+      </div>
+      <h3>Request Received!</h3>
+      <p>Thanks for reaching out. Our team will review your information and be in touch within 24 hours to confirm your strategy call.</p>
+      <button class="btn-outline" onclick="closeModal()" style="margin-top:8px">Close</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
