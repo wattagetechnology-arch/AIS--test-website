@@ -151,7 +151,7 @@
     .nav-logo img {
       height: 44px;
       width: auto;
-      mix-blend-mode: screen;
+      mix-blend-mode: lighten;
     }
     .nav-logo-text {
       font-family: var(--font-main);
@@ -308,7 +308,7 @@
       position: relative;
       z-index: 2;
       filter: drop-shadow(0 0 40px rgba(0,169,224,0.5));
-      mix-blend-mode: screen;
+      mix-blend-mode: lighten;
       animation: float 6s ease-in-out infinite;
     }
     @keyframes float {
@@ -853,7 +853,7 @@
     }
     .footer-brand {}
     .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-    .footer-logo img { height: 38px; mix-blend-mode: screen; }
+    .footer-logo img { height: 38px; mix-blend-mode: lighten; }
     .footer-logo-name {
       font-family: var(--font-main);
       font-weight: 700;
@@ -1407,10 +1407,16 @@
 
   // ── SCROLL REVEAL ──
   const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  reveals.forEach(el => observer.observe(el));
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.05 });
+    reveals.forEach(el => observer.observe(el));
+  } else {
+    reveals.forEach(el => el.classList.add('visible'));
+  }
+  // Fallback: make all reveals visible after 1s in case observer doesn't fire
+  setTimeout(() => { reveals.forEach(el => el.classList.add('visible')); }, 1000);
 
   // ── CIRCUIT CANVAS ──
   const canvas = document.getElementById('circuit-canvas');
